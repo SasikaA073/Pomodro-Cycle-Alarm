@@ -1,57 +1,99 @@
 #include "game_of_thrones.h"
-#include "sweer_child_of_mine.h"
+#include "sweet_child_of_mine.h"
 #include "pirates_of_the_carribean.h"
 #include "knight_rider.h"
 
-int pomodroCycleDuration = 25 * 60 * 1000;  // 25 mins
-int intervalDuration = 5 * 60 * 1000;       // 5 mins
-int longBreakDuration = 30 * 60 * 1000;
+unsigned long studySession = 25UL; // in mins; pomodoro cycle study session
+unsigned long interval = 5UL;      // in mins; short interval after a study session
 
+unsigned long pomodoroCycleDuration = studySession + interval;
+unsigned long longBreak = pomodoroCycleDuration * 4 - interval; // 4 cycles per a pomodro study Full period
 
+unsigned long nowTime;
 
-void pomodroCycle(int cycleDuration,int interval){
-  // Start of the pomodro cycle - plays melody 1, knightrider light pattern
-  
-  SweetChildOMine();
-  for (int i = 0;i<3;i++)
+unsigned long melody1PlayedTimes = 1UL;
+unsigned long melody2PlayedTimes = 1UL;
+unsigned long melody3PlayedTimes = 1UL;
+
+bool melody1Played = false; // Sweet child of mine
+bool melody2Played = false; // Pirates of the Carribean
+bool melody3Played = false; // Game of Thrones
+
+bool melody1PlayingStop = false;
+bool melody2PlayingStop = false;
+bool melody3PlayingStop = false;
+
+void setup()
+{
+
+  Serial.begin(9600);
+};
+
+void loop()
+{
+  // Generally pomodoro cycle runs for 4 cycles and then 15-30 mins long break
+
+  nowTime = millis();
+
+  if (((nowTime) >= (60UL * 1000UL * (pomodoroCycleDuration * (melody1PlayedTimes - 1UL)))) && !melody1PlayingStop) // Melody 1
   {
-    knightRider(50);
+    Serial.print("Now time is : ");
+    Serial.println(millis());
+
+    SweetChildOMine();
+
+    Serial.print("Melody 1 : Sweet Child of Mine played for times >> ");
+    Serial.println(melody1PlayedTimes);
+
+    melody1PlayedTimes += 1UL;
+    if (melody1PlayedTimes >= 5)
+    {
+      melody1PlayingStop = true;
+    }
   }
-  
-  // Wait for the cycle to end for 25 mins
-  delay(cycleDuration);
-  
-  // End of the pomodro cycle - plays melody 2 , for two times 
-  for (int i = 0;i<2;i++)
+
+  else if ((nowTime) >= (60UL * 1000UL * ((pomodoroCycleDuration * melody2PlayedTimes) - interval)) && !melody2PlayingStop) // Melody 2
   {
-  PiratesOTheCarribean();
-  }
-  
-  // Start of the interval period
-  delay(interval);
-  
-}
-void setup() {
-  // put your setup code here, to run once:
-  
-//GameOfThrones();  
-//SweetChildOMine();
-//PiratesOTheCarribean();
+    Serial.print("Now time is : ");
+    Serial.println(millis());
 
+    PiratesOTheCarribean();
 
-}
+    for (int i = 0; i < 2; i++)
+    {
+      knightRider(50);
+    }
 
-void loop() {
-  // Generally pomodro cycle runs for 4 cycles and then 15-30 mins long break
+    Serial.print("Melody 1 : Pirate of the Carribean played for times >> ");
+    Serial.println(melody2PlayedTimes);
 
-  // 4 Pomodro Cycles
-  for (int i = 0;i<4;i++){
-    pomodroCycle(pomodroCycleDuration,intervalDuration);
+    melody2PlayedTimes += 1UL;
+    if (melody2PlayedTimes >= 4)
+    {
+      melody2PlayingStop = true;
+    }
   }
 
-  // At the end plays melody 3
-  // 30 mins break 
-  GameOfThrones();
-  delay(longBreakDuration);
-  
+  else if (((nowTime) >= ((60UL * 1000UL * longBreak))) && !melody3PlayingStop) // Melody 3
+  {
+    Serial.print("Now time is : ");
+    Serial.println(millis());
+
+    for (int i = 0; i < 2; i++) // Plays for a long time to force the student to get a long break
+    {
+
+      GameOfThrones();
+    }
+
+    Serial.print("Melody 3 : Game of Thrones played for times >> ");
+    Serial.println(melody3PlayedTimes);
+    Serial.println(" ");
+    Serial.println("The Pomodoro Study Session is over... ");
+
+    melody3PlayedTimes += 1;
+    if (melody3PlayedTimes >= 2)
+    {
+      melody3PlayingStop = true;
+    }
+  }
 }

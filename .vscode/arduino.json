@@ -1,0 +1,5 @@
+{
+    "board": "WAV:avr:lardu_328p",
+    "programmer": "WAV:lgtmkii",
+    "sketch": "pomodro_cycles.ino"
+}
