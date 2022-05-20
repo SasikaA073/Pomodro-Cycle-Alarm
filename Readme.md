@@ -1,4 +1,4 @@
-# Arduino Alarm using Pomodro Techniques
+# Arduino Alarm using Pomodro Technique
 
 The buzzer starts to play three different melodies in differnt intervals according to the Pomodoro technique.
 
